@@ -1,0 +1,33 @@
+module InvSqrt
+  sub function InvSqrt (dim x as float)as float
+
+implements
+
+sub function InvSqrt (dim x as float)as float
+   const threehalfs = 1.5
+   dim x2 as float
+   dim id as longword
+
+   x2=x
+   highest(x2) = highest(x2)-1               'x2= x * 0.5
+
+   lo(id) = lo(x)                             ' evil floating point bit level hacking
+   hi(id) = hi(x)                             ' and  microchip float to IEEE convertion
+   higher(id) = higher(x)
+   highest(id) = highest(x)
+   id.23 = id.24
+   highest(id) =  highest(id) >> 1
+
+   id = 0x5f3759df - (id >> 1)                    ' magic number
+
+   highest(result) = highest(id)<<1               'IEEE to microchip float convertion
+   higher(result)  = higher(id)
+   hi(result)      = hi(id)
+   lo(result)      = lo(id)
+   result.24 = result.23
+   result.23  = 0
+
+   result = result * (threehalfs - (x2 * result * result))    ' 1st iteration
+
+end sub
+end.
